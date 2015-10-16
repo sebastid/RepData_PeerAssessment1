@@ -17,7 +17,7 @@ library(knitr)
 
 rm(list=ls(environment()))
 setwd("~/Documents/Coursera/repdata-033/RepData_PeerAssessment1")
-opts_chunk$set(echo=FALSE, results="hold", message=FALSE, fig.width=7)
+opts_chunk$set(echo=FALSE, results="hold", message=FALSE, fig.width=12, fig.height=8)
 
 unzip("activity.zip","activity.csv")
 data.activity <- read.csv(file="activity.csv", header=T, stringsAsFactors = F)
@@ -96,9 +96,11 @@ g <- g + geom_density()
 g <- g + geom_vline(xintercept = mean_total_steps_per_day_1, col="red")
 g <- g + labs(x = "Number of steps") + labs(y = "Density")
 g <- g + ggtitle("Histogram of the Mean Total\n Number of Steps Per Day")
-g <- g + theme_bw(base_family = "Avenir", base_size = 12)
+g <- g + theme_bw(base_family = "Avenir", base_size = 15)
 g <- g + theme(plot.title = element_text(size = rel(1.2),face="bold"))
-g <- g + theme(axis.text = element_text(size = rel(0.7)))
+g <- g + theme(axis.text = element_text(size = rel(0.8)))
+g <- g + theme(title = element_text(vjust=2))
+g <- g + theme(axis.title.x=element_text(vjust=0.1))
 plot(g)
 ```
 
@@ -136,16 +138,16 @@ at_min_labels <- c(at_min_labels,1440)
 at_time_labels <- c(at_time_labels,"24:00")
 
 #--- Using Base Plot
-par(mar=c(5, 5, 6, 5), oma=c(0, 0, 0, 0)) 
-plot(x=five_min_avg_data$interval_minute, y=five_min_avg_data$average_steps, type="l", xaxt='n', xlab='', ylab='',  cex.axis=0.75, tck=-0.02, col="blue")
+par(mar=c(8, 5, 8, 5), oma=c(0, 0, 0, 0), cex.main=1.5, cex.lab=1.2) 
+plot(x=five_min_avg_data$interval_minute, y=five_min_avg_data$average_steps, type="l", xaxt='n', xlab='', ylab='',  cex.axis=1, tck=-0.02, col="blue")
 axis(1, at=seq(0,1440,by=60), labels=FALSE, tck=1, xlim=c(0,1440), col.ticks="gray90", lwd=0.5)
 axis(1, at=seq(0,1440,by=60), labels=FALSE, tck=-0.02, xlim=c(0,1440), lwd=1)
-text(x = seq(0,1440,by=60), par("usr")[3]-10, labels = at_time_labels, srt = 90, pos = 2, offset = 0, xpd = T, cex = 0.75)
+text(x = seq(0,1440,by=60), par("usr")[3]-10, labels = at_time_labels, srt = 90, pos = 2, offset = 0, xpd = T, cex = 1)
 axis(4, at=seq(0,200,by=50), labels=FALSE, tck=1, col.ticks="gray90", lwd=0.5)
 axis(3, at=seq(0,1440,by=60), labels=FALSE,tck=-0.02, lwd=1)
-text(x = seq(0,1440,by=60), par("usr")[4]+10, labels = at_min_labels, srt = 90, pos = 4, offset=0, xpd = T,  cex = 0.75)
+text(x = seq(0,1440,by=60), par("usr")[4]+10, labels = at_min_labels, srt = 90, pos = 4, offset=0, xpd = T,  cex = 1)
 abline(v=max_step_interval_min,col="red")
-title("Averaged Daily Activity",xlab='5-min Intervals (top axis in minutes, bottom axis in hours)', ylab='Number of steps',cex.axis=0.5)
+title("Averaged Daily Activity",xlab='5-min Intervals (top axis in minutes, bottom axis in hours)', ylab='Number of steps',cex.axis=0.5,mgp=c(4,1,1))
 ```
 
 ![plot of chunk average daily activity plot](figure/average daily activity plot-1.png) 
@@ -161,7 +163,10 @@ total_na_steps_rows_nb <- sum(is.na(activity_tbl$steps))
 The dataset contain <b>2304</b> rows with missing values.  
   
   
-My strategy for filling in all of the missing values in the dataset is to use the mean for that 5-minute interval distribution.
+My strategy for filling in all of the missing values in the dataset is to re-use the  average of step numbers for each 5-minute interval calculated previously. The implemented code follows the steps below:  
+1. scan each step values for missing / NA values.  
+2. when a missing value is found then retrieve the average number of steps for the corresponding 5-minute interval.   
+3. fill in the missing value with the retrieved average value.  
 
 ```r
 #--- initialize the data table to fill in with missin values
@@ -173,7 +178,7 @@ for(i in seq(1:(nrow(filled_in_activity_tbl))))
     #--- gets the corresponding interval value for that missing step value
     fill_interval <- unlist(filled_in_activity_tbl[i,"interval"])
     
-    #--- retrieves the mean value from 'five_min_avg_data' calculate in previous section
+    #--- retrieves the mean value from 'five_min_avg_data' calculated in previous section
     fill_step_value <- unlist(five_min_avg_data %>% filter(interval==fill_interval) %>% select(average_steps))
     
     #--- fills in the missing value for row i with the retrieved value
@@ -211,9 +216,11 @@ g <- g + geom_density()
 g <- g + geom_vline(xintercept = mean_total_steps_per_day_2, col="red")
 g <- g + labs(x = "Number of steps") + labs(y = "Density")
 g <- g + ggtitle("Histogram of the Mean Total\n Number of Steps Per Day")
-g <- g + theme_bw(base_family = "Avenir", base_size = 12)
+g <- g + theme_bw(base_family = "Avenir", base_size = 15)
 g <- g + theme(plot.title = element_text(size = rel(1.2),face="bold"))
-g <- g + theme(axis.text = element_text(size = rel(0.7)))
+g <- g + theme(axis.text = element_text(size = rel(0.8)))
+g <- g + theme(title = element_text(vjust=2))
+g <- g + theme(axis.title.x=element_text(vjust=-1))
 plot(g)
 ```
 
@@ -245,7 +252,7 @@ The weekday median total number of steps taken per day is <b>10765.0</b> steps/d
 The weekend median total number of steps taken per day is <b>11646.0</b> steps/day.     
 
 
-The code below creates the histograms that show some differences in activity between week days and weekends:
+The code below creates the histograms that show some differences in activity between weekdays and weekends:
 
 ```r
 #--- vertical line data frame for the ggplot faceting
@@ -257,16 +264,18 @@ g <- g + geom_histogram(aes(y= ..density.., fill = ..density..))
 g <- g + geom_density()
 g <- g + geom_vline(aes(xintercept=vl), data=vline.dat, col="red")
 g <- g + labs(x = "Number of steps") + labs(y = "Density")
-g <- g + theme_bw(base_family = "Avenir", base_size = 12)
+g <- g + theme_bw(base_family = "Avenir", base_size = 15)
 g <- g + theme(plot.title = element_text(size = rel(1.2),face="bold"))
 g <- g + ggtitle("Histograms of the Mean Total\n Number of Steps Per Day")
-g <- g + theme(axis.text = element_text(size = rel(0.7)))
+g <- g + theme(axis.text = element_text(size = rel(0.8)))
+g <- g + theme(title = element_text(vjust=2))
+g <- g + theme(axis.title.x=element_text(vjust=-1))
 plot(g)
 ```
 
 ![plot of chunk diff in activity - 2](figure/diff in activity - 2-1.png) 
 
-The code below creates the histograms that show some differences in activity between week days and weekends:
+The code below creates the histograms that show some differences in activity between weekdays and weekends:
 
 ```r
 #--- grouping by interval and day_type and summarization by mean
@@ -288,14 +297,15 @@ at_time_labels <- c(at_time_labels,"24:00")
 g <- ggplot(five_min_avg_data_2, aes(x=interval_minute,y=average_steps))
 g <- g + facet_grid(day_type ~ .) 
 g <- g + geom_line(col="blue")
-
 g <- g + labs(x = "Interval") + labs(y = "Number of steps") 
-g <- g + theme_bw(base_family = "Avenir", base_size = 12)
+g <- g + theme_bw(base_family = "Avenir", base_size = 15)
 g <- g + theme(plot.title = element_text(size = rel(1.2),face="bold"))
 g <- g + ggtitle("Averaged Daily Weekdays and Weekends Activity")
 g <- g + scale_x_discrete(breaks=at_min_labels, labels=at_time_labels)
-g <- g + theme(axis.text = element_text(size = rel(0.7)))
+g <- g + theme(axis.text = element_text(size = rel(0.8)))
 g <- g + theme(axis.text.x  = element_text(angle=90, vjust=0.5))
+g <- g + theme(title = element_text(vjust=2))
+g <- g + theme(axis.title.x=element_text(vjust=-1))
 plot(g)
 ```
 
