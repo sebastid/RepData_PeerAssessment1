@@ -142,7 +142,7 @@ summary(filled_in_activity_tbl)
 ```
 
 This creates the histogram of the mean of the total number of steps taken each day after imputing missing data:  
-```{r echo=TRUE, results="hide"}
+```{r histogram with imputed data, echo=TRUE, results="hide"}
 #--- grouping by date and summarizing with sum
 total_steps_per_day_2<- filled_in_activity_tbl %>% group_by(date) %>% summarize(total_steps = sum(steps,na.rm=F)) 
 
