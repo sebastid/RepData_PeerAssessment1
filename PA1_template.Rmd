@@ -99,7 +99,7 @@ at_min_labels <- c(at_min_labels,1440)
 at_time_labels <- c(at_time_labels,"24:00")
 
 #--- Using Base Plot
-par(mar=c(8, 5, 8, 5), oma=c(0, 0, 0, 0), cex.main=1.5, cex.lab=1.2) 
+par(mar=c(8, 5, 9, 5), oma=c(0, 0, 0, 0), cex.main=1.5, cex.lab=1.2) 
 plot(x=five_min_avg_data$interval_minute, y=five_min_avg_data$average_steps, type="l", xaxt='n', xlab='', ylab='',  cex.axis=1, tck=-0.02, col="blue")
 axis(1, at=seq(0,1440,by=60), labels=FALSE, tck=1, xlim=c(0,1440), col.ticks="gray90", lwd=0.5)
 axis(1, at=seq(0,1440,by=60), labels=FALSE, tck=-0.02, xlim=c(0,1440), lwd=1)
